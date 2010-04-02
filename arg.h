@@ -9,7 +9,7 @@ typedef struct options {
 	int width;
 	int height;
 	int num_of_files;
-	char *filenames[FILENAME_MAX];
+	char *filenames;
 } argo;
 
 void process_args(char **argv,int argc, argo *opts);

@@ -10,6 +10,12 @@ int main (int argc, char **argv) {
 	// process all the cli options and return them in the structure
 	process_args(argv,argc,opts);
 
+	int c = 0;
+	
+	for (c=0;c<opts->num_of_files;c++) {
+		printf("%s\n",opts->filenames[c]);
+	}
+
 	// output somd debug info
 	if (opts->no_arrows) fprintf(stderr,"opts->no_arrows\n");
 	if (opts->no_numbers) fprintf(stderr,"opts->no_numbers\n");

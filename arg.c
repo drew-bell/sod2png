@@ -91,25 +91,24 @@ void process_args(char **argv,int argc, argo *opts) {
 		while (optind < argc) {
 			strcpy(file,argv[optind++]);
 			if (file_exists(file)) 
-				if (is_svg(file)) {
+				if (is_svg(file))
 					file_count++;
-				}
 		}
 	}
 	
-	printf("%i\n",file_count);	file_count = 0;
+	char *filesnames[FILENAME_MAX];
 	optind = m;
 
-	char filesnames[file_count+1][FILENAME_MAX];
+	file_count = 0;
 	if (optind < argc) {
 		while (optind < argc) {
 			strcpy(file,argv[optind++]);
 			if (file_exists(file)) 
-				if (is_svg(file)) {
+				if (is_svg(file))
 					strcpy(filesnames[file_count++],file);
-					printf("File :%s\n",file);
-				}
 		}
 	}
+	opts->num_of_files = file_count;
+	opts->filenames = filesnames;
 
 }
