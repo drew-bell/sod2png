@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
-#include <sys/stat.h>
 #include <limits.h>
+#include <libgen.h>
 #include "arg.h"
+
+static const char PROGRAM_VERSION[] = "0.0.1";
 
 void null_options(argo *opts) {
 	// Null out all the options
@@ -37,6 +38,26 @@ int is_svg(char *file) {
 	return 0;	// if not a jpg, return false
 }
 
+void help(const char *argv0) {
+	
+	char *argv0_copy = strdup (argv0);
+    char *argv0_base = basename (argv0_copy);
+	
+	fprintf(stderr,"Usage: %s [OPTIONS] <SVG_file> <PNG_file>\n",argv0_base);
+	puts ("");
+	fprintf(stderr,"  -w, --width=WIDTH\tWidth of output image in pixels\n");
+	fprintf(stderr,"  -h, --height=HEIGHT\tHeight of output image in pixels\n");
+	fprintf(stderr,"  -m, --sequence\tSequential image.\n");
+	puts ("");
+	fprintf(stderr,"  -a, --no-arrows\tRemove arrows from the output image.\n");
+	fprintf(stderr,"  -n, --no-numbers\tRemove numbers from the output.\n");
+	fprintf(stderr,"  -s, --no-startmark\tRemove start marks from the output.\n");
+	puts ("");
+	fprintf(stderr,"  -?, --help\t\tGive this help.\n");
+	fprintf(stderr,"  -V, --version\t\tProgram Version.\n");
+	free (argv0_copy);
+}
+
 void process_args(char **argv,int argc, argo *opts) {
 	
 	// makesure the arguments are at default levels
@@ -46,20 +67,21 @@ void process_args(char **argv,int argc, argo *opts) {
 	
 	// the long options for the program
 	static struct option long_options[] = {
-		/* These options set a flag.   */
-		{"no-arrows", no_argument, NULL, 'a'},
-		{"no-numbers", no_argument, NULL, 'n'},
-		{"no-startmark", no_argument, NULL, 'm'},
 		/* These options don't set a flag.
 		 We distinguish them by their indices.  */
+		{"version", no_argument, NULL, 'V'},
+		{"no-arrows", no_argument, NULL, 'a'},
+		{"no-numbers", no_argument, NULL, 'n'},
+		{"no-startmark", no_argument, NULL, 's'},
 		{"width", required_argument, NULL, 'w'},
 		{"height", required_argument, NULL, 'h'},
-		{"sequence", no_argument, NULL, 's'},
+		{"sequence", no_argument, NULL, 'm'},
+		{"help", no_argument, NULL, '?'},
 		{NULL, 0, NULL, 0}
 	};
 	
 	// parse the options and set the values in the options structure
-	while ((c = getopt_long(argc, argv, "namsw:h:", long_options, NULL)) != -1)
+	while ((c = getopt_long(argc, argv, "V?namsw:h:", long_options, NULL)) != -1)
 		switch (c) {
 			case 'w':
 				opts->width = atoi(optarg);
@@ -67,48 +89,72 @@ void process_args(char **argv,int argc, argo *opts) {
 			case 'h':
 				opts->height = atoi(optarg);
 				break;
-			case 's':
+			case 'm':
 				opts->sequential_images = true;
 				break;
 			case 'n':
 				opts->no_numbers = true;
 				break;
-			case 'm':
+			case 's':
 				opts->no_Start_mark = true;
 				break;
 			case 'a':
 				opts->no_arrows = true;
 				break;
+			case 'V':
+				fprintf(stderr,"Version v%s\n",PROGRAM_VERSION);
+				exit(0);
+				break;
+			case '?':
+				help(argv[0]);
+				exit(1);
+				break;
 			default:
+				fprintf(stderr,"Unknown option %d\n",c);
+				exit(1);
 				break;
 		}
-
-	int m = optind;
-	int file_count = 0;
-	char file[FILENAME_MAX];
-	/* Print any remaining command line arguments (not options). */
-	if (optind < argc) {
-		while (optind < argc) {
-			strcpy(file,argv[optind++]);
-			if (file_exists(file)) 
-				if (is_svg(file))
-					file_count++;
-		}
-	}
 	
-	char *filesnames[FILENAME_MAX];
-	optind = m;
-
-	file_count = 0;
-	if (optind < argc) {
-		while (optind < argc) {
-			strcpy(file,argv[optind++]);
-			if (file_exists(file)) 
-				if (is_svg(file))
-					strcpy(filesnames[file_count++],file);
+	
+    if (argc - optind >= 1) {
+		opts->svg_file = argv[optind++];
+		if (argc - optind >= 1) {
+			opts->png_file = argv[optind++];
+			if (argc - optind > 0) {
+					help (argv[0]);
+				exit (1);
+    	    }
 		}
-	}
-	opts->num_of_files = file_count;
-	opts->filenames = filesnames;
-
+		
+    }
+	
+	
+	
+	/*	int m = optind;
+	 int file_count = 0;
+	 char file[FILENAME_MAX];
+	 if (optind < argc) {
+	 while (optind < argc) {
+	 strcpy(file,argv[optind++]);
+	 if (file_exists(file)) 
+	 if (is_svg(file))
+	 file_count++;
+	 }
+	 }
+	 
+	 char *filesnames[FILENAME_MAX];
+	 optind = m;
+	 
+	 file_count = 0;
+	 if (optind < argc) {
+	 while (optind < argc) {
+	 strcpy(file,argv[optind++]);
+	 if (file_exists(file)) 
+	 if (is_svg(file))
+	 strcpy(filesnames[file_count++],file);
+	 }
+	 }
+	 opts->num_of_files = file_count;
+	 opts->filenames = filesnames;
+	 */
 }

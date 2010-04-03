@@ -10,11 +10,6 @@ int main (int argc, char **argv) {
 	// process all the cli options and return them in the structure
 	process_args(argv,argc,opts);
 
-	int c = 0;
-	
-	for (c=0;c<opts->num_of_files;c++) {
-		printf("%s\n",opts->filenames[c]);
-	}
 
 	// output somd debug info
 	if (opts->no_arrows) fprintf(stderr,"opts->no_arrows\n");
@@ -23,7 +18,7 @@ int main (int argc, char **argv) {
 	if (opts->sequential_images) fprintf(stderr,"opts->sequential_images\n");
 	if (opts->width > 0) fprintf(stderr,"opts->width = %i\n",opts->width);
 	if (opts->height > 0) fprintf(stderr,"opts->height = %i\n",opts->height);
-	
+	if (opts->svg_file != NULL) fprintf(stderr,"opts->svg_file = %s\n",opts->svg_file);
 	return 0;
 
 } // main
