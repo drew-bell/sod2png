@@ -1,14 +1,20 @@
 PROGRAM_NAME = sod2png
 COMPILER = gcc
-CCFLAGS = -Wall -O2 -g
+CCFLAGS = -Wall -g
 PATHFLAGS = -I/usr/include/libxml2
 LLFLAGS = -lxml2
 
-sod2png: main.c arg.o xml_editing.o 
-	${COMPILER} ${CCFLAGS} ${PATHFLAGS} ${LLFLAGS} main.c arg.o editing.o -o ${PROGRAM_NAME} 
+sod2png: main.o arg.o editing.o
+	${COMPILER} ${CCFLAGS} ${PATHFLAGS} ${LLFLAGS} -o sod2png main.o arg.o editing.o
 
-xml_editing.o: editing.c editing.h
-	cc    -c -o editing.o ${PATHFLAGS} editing.c 
-	
+editing.o: editing.c editing.h
+	gcc    -c ${PATHFLAGS} editing.c
+
+arg.o: arg.c arg.h
+	gcc    -c arg.c
+
+main.o: main.c arg.h editing.h 
+	gcc    -c ${PATHFLAGS} main.c 	
+
 clean: 
 	rm -rf *.o sod2png
