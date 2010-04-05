@@ -1,17 +1,37 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <libxml/tree.h>
+#include <libxml/parser.h>
 #include "arg.h"
+#include "editing.h"
 
 int main (int argc, char **argv) {
 	
 	// A structure to hold all the cli arguments
 	argo *opts = malloc(sizeof(opts));
-	
+	xmlNode *root_element = NULL;
+
 	// process all the cli options and return them in the structure
 	process_args(argv,argc,opts);
 
+	LIBXML_TEST_VERSION
 
-	// output somd debug info
+	// Load the file to memory
+	xmlDocPtr doc;
+	doc = xmlReadFile("1.svg", NULL, 0);
+	
+	/*Get the root element node */
+    root_element = xmlDocGetRootElement(doc);
+	
+    print_element_names(root_element);
+	
+	// Filter the file in memory
+	xmlCleanupParser();
+	xmlMemoryDump();
+	xmlFreeDoc(doc);
+	// output the filtered file to png
+	
+	// output some debug info
 	if (opts->no_arrows) fprintf(stderr,"opts->no_arrows\n");
 	if (opts->no_numbers) fprintf(stderr,"opts->no_numbers\n");
 	if (opts->no_Start_mark) fprintf(stderr,"opts->no_Start_mark\n");
@@ -19,6 +39,6 @@ int main (int argc, char **argv) {
 	if (opts->width > 0) fprintf(stderr,"opts->width = %i\n",opts->width);
 	if (opts->height > 0) fprintf(stderr,"opts->height = %i\n",opts->height);
 	if (opts->svg_file != NULL) fprintf(stderr,"opts->svg_file = %s\n",opts->svg_file);
-	return 0;
+	return (0);
 
 } // main

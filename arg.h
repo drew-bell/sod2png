@@ -1,5 +1,4 @@
 #include <stdbool.h>
-#include <limits.h>
 
 typedef struct options {
 	bool no_arrows;

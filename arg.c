@@ -121,7 +121,7 @@ void process_args(char **argv,int argc, argo *opts) {
 		if (argc - optind >= 1) {
 			opts->png_file = argv[optind++];
 			if (argc - optind > 0) {
-					help (argv[0]);
+				help (argv[0]);
 				exit (1);
     	    }
 		}
