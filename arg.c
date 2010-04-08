@@ -17,6 +17,8 @@ void null_options(argo *opts) {
 	opts->width = 0;
 	opts->height = 0;
 	opts->num_of_files = 0;
+	opts->svg_file = NULL;
+	opts->png_file = NULL;
 }
 
 // check to see if the file already exists
@@ -59,9 +61,6 @@ void help(const char *argv0) {
 }
 
 void process_args(char **argv,int argc, argo *opts) {
-	
-	// makesure the arguments are at default levels
-	null_options(opts);
 	
 	int c;
 	

@@ -5,7 +5,7 @@ PATHFLAGS = -I/usr/include/libxml2
 LLFLAGS = -lxml2
 
 sod2png: main.o arg.o editing.o
-	${COMPILER} ${CCFLAGS} ${PATHFLAGS} ${LLFLAGS} -o sod2png main.o arg.o editing.o
+	${COMPILER} ${CCFLAGS} ${PATHFLAGS} ${LLFLAGS} -o ${PROGRAM_NAME} main.o arg.o editing.o
 
 editing.o: editing.c editing.h
 	gcc    -c ${PATHFLAGS} editing.c
