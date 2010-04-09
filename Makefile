@@ -4,11 +4,11 @@ CCFLAGS = -Wall -g
 PATHFLAGS = -I/usr/include/libxml2 -I/usr/local/include/cairo
 LLFLAGS = -lxml2 -lcairo -lsvg-cairo
 
-sod2png: main.o arg.o editing.o pngout.o
-	${COMPILER} ${CCFLAGS} ${PATHFLAGS} ${LLFLAGS} -o ${PROGRAM_NAME} main.o arg.o editing.o pngout.o
+sod2png: main.o arg.o editing.o svg2png.o
+	${COMPILER} ${CCFLAGS} ${PATHFLAGS} ${LLFLAGS} -o ${PROGRAM_NAME} main.o arg.o editing.o svg2png.o
 
-pngout.o: pngout.c pngout.h
-	gcc    -c ${PATHFLAGS} pngout.c
+svg2png.o: svg2png.c svg2png.h
+	gcc    -c ${PATHFLAGS} svg2png.c
 
 editing.o: editing.c editing.h
 	gcc    -c ${PATHFLAGS} editing.c

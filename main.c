@@ -5,6 +5,7 @@
 #include <libxml/parser.h>
 #include "arg.h"
 #include "editing.h"
+#include "svg2png.h"
 
 int main (int argc, char **argv) {
 
