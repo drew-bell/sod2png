@@ -50,7 +50,7 @@ void help(const char *argv0) {
 	puts ("");
 	fprintf(stderr,"  -w, --width=WIDTH\tWidth of output image in pixels\n");
 	fprintf(stderr,"  -h, --height=HEIGHT\tHeight of output image in pixels\n");
-	fprintf(stderr,"  -m, --sequence\tSequential image.\n");
+//	fprintf(stderr,"  -m, --sequence\tSequential image.\n");
 	puts ("");
 	fprintf(stderr,"  -a, --no-arrows\tRemove arrows from the output image.\n");
 	fprintf(stderr,"  -n, --no-numbers\tRemove numbers from the output.\n");
@@ -75,7 +75,7 @@ void process_args(char **argv,int argc, argo *opts) {
 		{"no-startmark", no_argument, NULL, 's'},
 		{"width", required_argument, NULL, 'w'},
 		{"height", required_argument, NULL, 'h'},
-		{"sequence", no_argument, NULL, 'm'},
+//		{"sequence", no_argument, NULL, 'm'},
 		{"help", no_argument, NULL, '?'},
 		{NULL, 0, NULL, 0}
 	};
@@ -89,9 +89,9 @@ void process_args(char **argv,int argc, argo *opts) {
 			case 'h':
 				opts->height = atoi(optarg);
 				break;
-			case 'm':
-				opts->sequential_images = true;
-				break;
+	//		case 'm':
+	//			opts->sequential_images = true;
+	//			break;
 			case 'n':
 				opts->no_numbers = true;
 				break;

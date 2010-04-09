@@ -9,6 +9,16 @@ Currently it has only been tested on OS X 10.6.3.
 This program takes one of the sag files from kanjisod.kicks-ass.net and alters it to desired style before outputting to the file to a png image.
 
 This is a beta release! Use at your own risk.
+
+To build the code if you have all the dependencies just run
+
+./make
+
+There is no install option yet.
+
+For information on usage, see the help output from the program
+./sod2png --help
+
 The code for the rendering to png was almost directly copied from svg2png. 
 
 Becasue of that, below is their Copyright notice
