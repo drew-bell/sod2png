@@ -17,6 +17,8 @@ void null_options(argo *opts) {
 	opts->width = 0;
 	opts->height = 0;
 	opts->num_of_files = 0;
+	opts->svg_file = malloc(sizeof(char*));
+	opts->png_file = malloc(sizeof(char*));
 	opts->svg_file = NULL;
 	opts->png_file = NULL;
 }
@@ -127,33 +129,10 @@ void process_args(char **argv,int argc, argo *opts) {
 		
     }
 	
-	
-	
-	/*	int m = optind;
-	 int file_count = 0;
-	 char file[FILENAME_MAX];
-	 if (optind < argc) {
-	 while (optind < argc) {
-	 strcpy(file,argv[optind++]);
-	 if (file_exists(file)) 
-	 if (is_svg(file))
-	 file_count++;
-	 }
-	 }
-	 
-	 char *filesnames[FILENAME_MAX];
-	 optind = m;
-	 
-	 file_count = 0;
-	 if (optind < argc) {
-	 while (optind < argc) {
-	 strcpy(file,argv[optind++]);
-	 if (file_exists(file)) 
-	 if (is_svg(file))
-	 strcpy(filesnames[file_count++],file);
-	 }
-	 }
-	 opts->num_of_files = file_count;
-	 opts->filenames = filesnames;
-	 */
+	if (opts->sequential_images) fprintf(stderr,"opts->sequential_images\n");
+	if (opts->width > 0) fprintf(stderr,"opts->width = %i\n",opts->width);
+	if (opts->height > 0) fprintf(stderr,"opts->height = %i\n",opts->height);
+	if (opts->svg_file != NULL) fprintf(stderr,"opts->svg_file = %s\n",opts->svg_file);
+	if (opts->png_file != NULL) printf("opts->png_file = %s\n",opts->png_file);
+
 }
