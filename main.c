@@ -5,11 +5,8 @@
 #include <libxml/parser.h>
 #include "arg.h"
 #include "editing.h"
-#include <limits.h>
 
 int main (int argc, char **argv) {
-
-	FILE *png;
 
 	// A structure to hold all the cli arguments
 	argo *opts = malloc(sizeof(opts));
@@ -38,15 +35,23 @@ int main (int argc, char **argv) {
 	// Pass the first node of the doc in memory for removal of unwanted parts
 	process_xml_options(root_element, opts);
 
+	// If an output file has not been given, output the edited file to stdout
 	if (NULL == opts->png_file) {
-		xmlDocDump(stdout,doc); 
-	} else {
-	// create an output file handle
-	png = fopen(opts->png_file,"w");
 
-	// output the altered file
-	xmlDocDump(png,doc);
+		// dump to standard out
+		xmlDocDump(stdout,doc);
+		
+	} else {
+		
+		FILE *png;
+
+		// create an output file handle
+		png = fopen(opts->png_file,"w");
+
+		// output the altered file
+		xmlDocDump(png,doc);
 	}
+	
 	/* Clean up */
 	xmlCleanupParser();
 	xmlMemoryDump();
