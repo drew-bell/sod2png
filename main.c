@@ -26,8 +26,14 @@ int main (int argc, char **argv) {
 	// Allocate the xmldoc handle
 	xmlDocPtr doc;
 
-	// Read the file into memory
-	doc = xmlParseFile(opts->svg_file);
+	if (opts->svg_file == NULL) {
+		fprintf(stderr,"No file to process.\n");
+		exit(0);
+	} else {
+
+		// Read the file into memory
+		doc = xmlParseFile(opts->svg_file);
+	}
 
 	// Get the root element node
 	root_element = xmlDocGetRootElement(doc);
@@ -35,28 +41,34 @@ int main (int argc, char **argv) {
 	// Pass the first node of the doc in memory for removal of unwanted parts
 	process_xml_options(root_element, opts);
 
-	// If an output file has not been given, output the edited file to stdout
+	FILE *png, *temp_file, *svg;
+
+	temp_file = fopen("tmpfile","w");
+
+	// output the altered file
+	xmlDocDump(temp_file,doc);
+
+	fclose(temp_file);
+
 	if (NULL == opts->png_file) {
-
-		// dump to standard out
-		xmlDocDump(stdout,doc);
-		
+		png = stdout;
 	} else {
-		
-		FILE *png;
-
-		// create an output file handle
 		png = fopen(opts->png_file,"w");
-
-		// output the altered file
-		xmlDocDump(png,doc);
 	}
-	
+
+	svg = fopen("tmpfile","r");
+
+	//render to png
+	render_to_png(svg, png, 1.0, opts->width, opts->height);
+
 	/* Clean up */
 	xmlCleanupParser();
 	xmlMemoryDump();
 	xmlFreeDoc(doc);
-	
+	fclose(svg);
+	fclose(png);
+
+	unlink("tmpfile");
 	return (0);
 
 } // main

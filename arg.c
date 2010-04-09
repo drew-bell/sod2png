@@ -13,8 +13,8 @@ void null_options(argo *opts) {
 	opts->no_numbers = false;
 	opts->no_Start_mark = false;
 	opts->sequential_images = false;
-	opts->width = 0;
-	opts->height = 0;
+	opts->width = -1;
+	opts->height = -1;
 	opts->num_of_files = 0;
 	opts->svg_file = malloc(sizeof(char*));
 	opts->png_file = malloc(sizeof(char*));
