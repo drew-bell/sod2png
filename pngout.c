@@ -7,7 +7,7 @@
 #include "arg.h"
 #define MIN(a, b)     (((a) < (b)) ? (a) : (b))
 
-cairo_status_t write_callback (void *closure, const unsigned char *data, unsigned int length)
+for cairo_status_t write_callback (void *closure, const unsigned char *data, unsigned int length)
 {
     size_t written;
     FILE *file = closure;
