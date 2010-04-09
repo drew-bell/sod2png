@@ -4,4 +4,6 @@ build/*
 *.model1v3
 .DS_Store
 *.o
+*.svg
+sod2png
 profile
