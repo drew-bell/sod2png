@@ -6,10 +6,7 @@
 #include "arg.h"
 #include "editing.h"
 #include "svg2png.h"
-
-int is_type(char *file,char *type);
-char* ext(char *file);
-svg_cairo_status_t (*GetPtr(char *file))(FILE*,FILE*,double,int,int);
+#include "types.h"
 
 int main (int argc, char **argv) {
 
@@ -68,7 +65,7 @@ int main (int argc, char **argv) {
 		svg_cairo_status_t (*render_functptr)(FILE*,FILE*,double,int,int) = NULL;
 		
 		// point the render function to the correct one
-		render_functptr = GetPtr(opts->out_file);
+		render_functptr = get_render_function(opts->out_file);
 		
 		if (NULL != render_functptr) {
 			// Create file handles
@@ -115,32 +112,4 @@ int main (int argc, char **argv) {
 
 } // main
 
-// determine if the file is of type *type (this should be a extention including the "." )
-int is_type(char *file,char *type) {
-	char *ext;
-	ext = strrchr(file, '.');
-		if ((strcasecmp(ext,type) == 0)) {	
-			return 1;// if it is an image of type, return true
-		}
-	return 0;	// if not of specified type, return false
-} // is type
-
-char* ext(char *file) {
-	return strrchr(file,'.');
-}
-
-svg_cairo_status_t (*GetPtr(char *file))(FILE*,FILE*,double,int,int) {
-
-	if (is_type(file,".png")) {
-		
-		// Set the output function to render_to_png
-		return &render_to_png;
-	} else {
-		
-		// return a null pointer if the file type is unknown
-		return NULL;
-	}
-
-	
-}
 
