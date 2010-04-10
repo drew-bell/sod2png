@@ -7,8 +7,6 @@
 #include "editing.h"
 #include "svg2png.h"
 #include "types.h"
-#include "config.h"
-
 
 int main (int argc, char **argv) {
 
