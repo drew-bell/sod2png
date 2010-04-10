@@ -7,6 +7,8 @@
 #include "editing.h"
 #include "svg2png.h"
 
+int is_type(char *file,char *type);
+
 int main (int argc, char **argv) {
 
 	// A structure to hold all the cli arguments
@@ -42,34 +44,91 @@ int main (int argc, char **argv) {
 	// Pass the first node of the doc in memory for removal of unwanted parts
 	process_xml_options(root_element, opts);
 
-	FILE *png, *temp_file, *svg;
+	// If no output file has ben specified, dump the edited svg to stdout.
+	if (opts->out_file == NULL) {
+		
+		// Dump the file
+		xmlDocDump(stdout,doc);
 
-	temp_file = fopen("tmpfile","w");
+	} else if (is_type(opts->out_file,".svg")) {
+		
+		// File handle
+		FILE *output_format;
+		
+		// open file for writing
+		output_format = fopen(opts->out_file,"w");
 
-	// output the altered file
-	xmlDocDump(temp_file,doc);
+		// Dump the file to document
+		xmlDocDump(output_format,doc);
 
-	fclose(temp_file);
-
-	if (NULL == opts->png_file) {
-		png = stdout;
 	} else {
-		png = fopen(opts->png_file,"w");
+		// Pointer to function
+		svg_cairo_status_t (*render_functptr)(FILE*,FILE*,double,int,int);
+	
+		if (is_type(opts->out_file,".png")) {
+			
+			// Set the output function to render_to_png
+			render_functptr = &render_to_png;
+			
+		} else {
+			
+			// Output the problem and exit
+			fprintf(stderr,"Unsupported file type: %s\n",opts->out_file);
+
+			/* Clean up */
+			xmlCleanupParser();
+			xmlMemoryDump();
+			xmlFreeDoc(doc);
+
+			// exit the program
+			exit(0);
+		}
+		
+		// Create file handles
+		FILE *output_format, *temp_file, *svg;
+
+		// Create a tmp intermediary file
+		temp_file = fopen("tmpfile","w");
+
+		// output the altered file
+		xmlDocDump(temp_file,doc);
+
+		// close the temp file
+		fclose(temp_file);
+
+		// open file for writing
+		output_format = fopen(opts->out_file,"w");
+
+		// open the temp file for conversion to png
+		svg = fopen("tmpfile","r");
+		
+		// render the output file
+		render_functptr(svg, output_format, 1.0, opts->width, opts->height);
+		
+		// close all files
+		fclose(svg);
+		fclose(output_format);
+
+		// delete the temp file
+		unlink("tmpfile");
 	}
-
-	svg = fopen("tmpfile","r");
-
-	//render to png
-	render_to_png(svg, png, 1.0, opts->width, opts->height);
 
 	/* Clean up */
 	xmlCleanupParser();
 	xmlMemoryDump();
 	xmlFreeDoc(doc);
-	fclose(svg);
-	fclose(png);
 
-	unlink("tmpfile");
 	return (0);
 
 } // main
+
+// determine if the file is of type *type (this should be a extention including the "." )
+int is_type(char *file,char *type) {
+	char *ext;
+	if ((ext = strrchr(file, '.')))	{
+		if ((strcasecmp(ext,type) == 0)) {	
+			return 1;// if it is an image of type, return true
+		}
+	}
+	return 0;	// if not of specified type, return false
+}
