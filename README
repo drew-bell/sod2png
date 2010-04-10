@@ -1,8 +1,10 @@
-This program has the following dependancies
+sod2png
 
--- cairo
--- svg-cairo
--- libxml2
+Dependencies
+------------
+cairo library
+svg-cairo library
+libxml2 library
 
 Currently it has only been tested on OS X 10.6.3.
 
