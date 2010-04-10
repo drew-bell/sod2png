@@ -8,6 +8,8 @@
 #include "svg2png.h"
 
 int is_type(char *file,char *type);
+char* ext(char *file);
+svg_cairo_status_t (*GetPtr(char *file))(FILE*,FILE*,double,int,int);
 
 int main (int argc, char **argv) {
 
@@ -63,54 +65,45 @@ int main (int argc, char **argv) {
 
 	} else {
 		// Pointer to function
-		svg_cairo_status_t (*render_functptr)(FILE*,FILE*,double,int,int);
-	
-		if (is_type(opts->out_file,".png")) {
+		svg_cairo_status_t (*render_functptr)(FILE*,FILE*,double,int,int) = NULL;
+		
+		// point the render function to the correct one
+		render_functptr = GetPtr(opts->out_file);
+		
+		if (NULL != render_functptr) {
+			// Create file handles
+			FILE *output_format, *temp_file, *svg;
 			
-			// Set the output function to render_to_png
-			render_functptr = &render_to_png;
+			// Create a tmp intermediary file
+			temp_file = fopen("tmpfile","w");
 			
+			// output the altered file
+			xmlDocDump(temp_file,doc);
+			
+			// close the temp file
+			fclose(temp_file);
+			
+			// open file for writing
+			output_format = fopen(opts->out_file,"w");
+			
+			// open the temp file for conversion to png
+			svg = fopen("tmpfile","r");
+			
+			// render the output file
+			render_functptr(svg, output_format, 1.0, opts->width, opts->height);
+			
+			// close all files
+			fclose(svg);
+			fclose(output_format);
+			
+			// delete the temp file
+			unlink("tmpfile");
 		} else {
-			
-			// Output the problem and exit
-			fprintf(stderr,"Unsupported file type: %s\n",opts->out_file);
 
-			/* Clean up */
-			xmlCleanupParser();
-			xmlMemoryDump();
-			xmlFreeDoc(doc);
-
-			// exit the program
-			exit(0);
+			// Output error for the user
+			fprintf(stderr,"Unknown output file type : %s\n", ext(opts->out_file));
 		}
-		
-		// Create file handles
-		FILE *output_format, *temp_file, *svg;
 
-		// Create a tmp intermediary file
-		temp_file = fopen("tmpfile","w");
-
-		// output the altered file
-		xmlDocDump(temp_file,doc);
-
-		// close the temp file
-		fclose(temp_file);
-
-		// open file for writing
-		output_format = fopen(opts->out_file,"w");
-
-		// open the temp file for conversion to png
-		svg = fopen("tmpfile","r");
-		
-		// render the output file
-		render_functptr(svg, output_format, 1.0, opts->width, opts->height);
-		
-		// close all files
-		fclose(svg);
-		fclose(output_format);
-
-		// delete the temp file
-		unlink("tmpfile");
 	}
 
 	/* Clean up */
@@ -125,10 +118,29 @@ int main (int argc, char **argv) {
 // determine if the file is of type *type (this should be a extention including the "." )
 int is_type(char *file,char *type) {
 	char *ext;
-	if ((ext = strrchr(file, '.')))	{
+	ext = strrchr(file, '.');
 		if ((strcasecmp(ext,type) == 0)) {	
 			return 1;// if it is an image of type, return true
 		}
-	}
 	return 0;	// if not of specified type, return false
+} // is type
+
+char* ext(char *file) {
+	return strrchr(file,'.');
 }
+
+svg_cairo_status_t (*GetPtr(char *file))(FILE*,FILE*,double,int,int) {
+
+	if (is_type(file,".png")) {
+		
+		// Set the output function to render_to_png
+		return &render_to_png;
+	} else {
+		
+		// return a null pointer if the file type is unknown
+		return NULL;
+	}
+
+	
+}
+
