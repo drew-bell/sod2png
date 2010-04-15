@@ -1,6 +1,7 @@
 #include <string.h>
 #include <svg-cairo.h>
 #include "svg2png.h"
+#include <stdbool.h>
 #include "types.h"
 
 // determine if the file is of type *type (this should be a extention including the "." )
@@ -16,11 +17,11 @@ int is_type(char *file,char *type) {
 	if ((strcasecmp(ext,type) == 0)) {
 		
 		// if it is an image of type, return true
-		return 1;
+		return true;
 	}
 	
 	// if not of specified type, return false
-	return 0;
+	return false;
 } // is type
 
 char* ext(char *file) {

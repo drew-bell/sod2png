@@ -10,3 +10,5 @@ build/*
 tmpfile
 sod2png
 profile
+*.cache
+.deps

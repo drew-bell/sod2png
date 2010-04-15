@@ -22,25 +22,6 @@ void null_options(argo *opts) {
 	opts->out_file = NULL;
 }
 
-// check to see if the file already exists
-int file_exists(char *file) {
-	if (0 != access(file,R_OK)) {
-		return 0;
-	}
-	return 1;
-}
-
-// determine if the file is a jpeg based on the extention
-int is_svg(char *file) {
-	char *ext;
-	if ((ext = strrchr(file, '.')))	{
-		if ((strcasecmp(ext,".svg") == 0)) {	
-			return 1;// if it is an image, return true
-		}
-	}
-	return 0;	// if not a jpg, return false
-}
-
 void help(const char *argv0) {
 	
 	char *argv0_copy = strdup (argv0);
