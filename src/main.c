@@ -41,11 +41,8 @@ int main (int argc, char **argv) {
 		doc = xmlParseFile(opts->svg_file);
 	}
 
-	// Get the root element node
-	root_element = xmlDocGetRootElement(doc);
-
-	// Pass the first node of the doc in memory for removal of unwanted parts
-	process_xml_options(root_element, opts);
+	// Pass the doc in memory for removal of unwanted parts
+	process_xml_options(doc, opts);
 
 	// If no output file has ben specified, dump the edited svg to stdout.
 	if (opts->out_file == NULL) {

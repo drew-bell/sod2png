@@ -3,10 +3,14 @@ CC = gcc
 CCFLAGS = -Wall -g
 CFLAGS = -I/usr/include/libxml2 -I/usr/local/include/cairo
 LDFLAGS = -lxml2 -lcairo -lsvg-cairo
-
+srcdir = .
 all: sod2png
 
-sod2png: main.o arg.o editing.o svg2png.o types.o
+sod2png: $(srcdir)/main.o \
+	$(srcdir)/arg.o \
+	$(srcdir)/editing.o \
+	$(srcdir)/svg2png.o \
+	$(srcdir)/types.o
 	${CC} ${CCFLAGS} ${CFLAGS} ${LDFLAGS} -o ${PROGRAM_NAME} main.o arg.o editing.o svg2png.o types.o
 
 .c.o:
