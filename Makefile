@@ -1,7 +1,7 @@
 PROGRAM_NAME = sod2png
 CC = gcc
 CCFLAGS = -Wall -g
-CFLAGS = -I/usr/include/libxml2 -I/usr/local/include/cairo
+CFLAGS = -I/usr/local/include/libxml2 -I/usr/local/include/cairo
 LDFLAGS = -lxml2 -lcairo -lsvg-cairo
 srcdir = .
 all: sod2png
@@ -11,7 +11,7 @@ sod2png: $(srcdir)/src/main.o \
 	$(srcdir)/src/editing.o \
 	$(srcdir)/src/svg2png.o \
 	$(srcdir)/src/types.o
-	${CC} ${CCFLAGS} ${CFLAGS} ${LDFLAGS} -o src/${PROGRAM_NAME} src/main.o src/arg.o src/editing.o src/svg2png.o src/types.o
+	${CC} ${CCFLAGS} ${CFLAGS} ${LDFLAGS}  -ggdb -o src/${PROGRAM_NAME} src/main.o src/arg.o src/editing.o src/svg2png.o src/types.o
 
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@

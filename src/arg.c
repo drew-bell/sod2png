@@ -4,6 +4,7 @@
 #include <string.h>
 #include <libgen.h>
 #include "arg.h"
+#include "types.h"
 
 static const char PROGRAM_VERSION[] = "0.0.1";
 
@@ -114,6 +115,8 @@ void process_args(char **argv,int argc, argo *opts) {
     	    }
 		}
     }
+
+	if (!file_exists(opts->svg_file)) exit(0);
 
 // Print some debug info
 	if (opts->sequential_images) fprintf(stderr,"opts->sequential_images\n");

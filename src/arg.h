@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <limits.h>
 
 typedef struct options {
 	bool no_arrows;
@@ -13,3 +14,4 @@ typedef struct options {
 } argo;
 
 void process_args(char **argv,int argc, argo *opts);
+void null_options(argo *opts);

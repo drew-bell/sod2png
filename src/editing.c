@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include "editing.h"
 #include "types.h"
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+
 
 // Prototypes
 static void remove_part(xmlNode* a_node, char *node_type);
@@ -10,7 +14,7 @@ void remove_part(xmlNode* a_node, char *node_type) {
     xmlNode *cur_node = NULL;
 	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
         if (cur_node->type == XML_ELEMENT_NODE) {
-			if (!strcmp(cur_node->name,node_type)) {
+			if (!strcmp((char*)cur_node->name,node_type)) {
 				xmlUnlinkNode(cur_node);
 			}
 		}
@@ -191,10 +195,10 @@ void change_fill_colour(xmlNode *a_node, char *node_type) {
 	xmlNode *cur_node = NULL;
 	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
         if (cur_node->type == XML_ELEMENT_NODE) {
-			if (!strcmp(cur_node->name,node_type)) {
+			if (!strcmp((char*)cur_node->name,node_type)) {
 				
 				// remove any property called "fill"
-				xmlUnsetProp(cur_node, "fill");
+				xmlUnsetProp(cur_node,(unsigned char*)"fill");
 				
 				// set a fill colour for the node
 				xmlNewProp(cur_node, BAD_CAST "fill", BAD_CAST "#333333");
