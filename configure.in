@@ -1,9 +1,0 @@
-AC_INIT(main.c,[0.1])
-AM_INIT_AUTOMAKE
-AM_CONFIG_HEADER(config.h:config.in)
-AC_PROG_CC
-AC_HEADER_STDC
-AC_CHECK_HEADERS(cairo.h)
-AC_CHECK_HEADERS(svg-cairo.h)
-AC_CHECK_HEADERS(libxml/tree.h)
-AC_OUTPUT(Makefile)
