@@ -99,7 +99,7 @@ void setup_basic_doc(xmlDocPtr ND) {
 
 void create_sequential_images(xmlNode *OD_root_node, argo opts) {
 
-	int number = 0;
+	int number = 1;
 
 	// make the output file pretty
 	xmlIndentTreeOutput = 1;
@@ -124,6 +124,11 @@ void create_sequential_images(xmlNode *OD_root_node, argo opts) {
 	cur_node = OD_root_node->children;
 	cur_node = cur_node->next;
 
+	char kanji[FILENAME_MAX];
+	strncpy(kanji,opts->svg_file,strlen(opts->svg_file)-4);
+	
+	printf("%s",kanji);
+	
 	for (cur_node = cur_node->next; cur_node; cur_node = cur_node->next) {
         if (cur_node->type == XML_ELEMENT_NODE) {
 
@@ -140,7 +145,7 @@ void create_sequential_images(xmlNode *OD_root_node, argo opts) {
 			xmlAddChild(ND_root_node, node_copy);
 			
 			// Make an image
-			push_out_image(ND,opts,number);
+			push_out_image(ND,opts,number,kanji);
 
 			// increase the filename number
 			number++;
@@ -148,7 +153,7 @@ void create_sequential_images(xmlNode *OD_root_node, argo opts) {
     }
 }
 
-void push_out_image(xmlDocPtr ND, argo opts, int number) {
+void push_out_image(xmlDocPtr ND, argo opts, int number, char *kanji) {
 
 	// Output file name
 	char filename[FILENAME_MAX];
@@ -165,8 +170,9 @@ void push_out_image(xmlDocPtr ND, argo opts, int number) {
 	// close the temp file
 	fclose(temp_file);
 
+	//printf("%s",kanji);
 	// Create the output image name
-	sprintf(filename, "image_%d_.png", number);
+	sprintf(filename, "%s stroke %d_.png", kanji, number);
 
 	// open file for writing
 	output_format = fopen(filename,"w");

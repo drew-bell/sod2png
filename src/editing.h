@@ -9,4 +9,4 @@ void change_fill_colour(xmlNode *a_node, char *node_type);
 void setup_basic_doc(xmlDocPtr NewDoc);
 void create_sequential_images(xmlNode *OD_root_node, argo opts);
 void setup_basic_doc(xmlDocPtr NewDoc);
-void push_out_image(xmlDocPtr ND, argo opts, int number);
+void push_out_image(xmlDocPtr ND, argo opts, int number, char *kanji);
