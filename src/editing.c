@@ -35,7 +35,7 @@ void print_element_names(xmlNode* a_node) {
 }
 
 //void process_xml_options(xmlNode* node, argo *selected_opts) {
-void process_xml_options(xmlDocPtr doc, argo *selected_opts) {
+void process_xml_options(xmlDocPtr doc, argo selected_opts) {
 
 	// A pointer to the root element of the file
 	xmlNode *root_element = NULL;
@@ -97,7 +97,7 @@ void setup_basic_doc(xmlDocPtr ND) {
 }
 
 
-void create_sequential_images(xmlNode *OD_root_node, argo *opts) {
+void create_sequential_images(xmlNode *OD_root_node, argo opts) {
 
 	int number = 0;
 
@@ -148,7 +148,7 @@ void create_sequential_images(xmlNode *OD_root_node, argo *opts) {
     }
 }
 
-void push_out_image(xmlDocPtr ND, argo *opts, int number) {
+void push_out_image(xmlDocPtr ND, argo opts, int number) {
 
 	// Output file name
 	char filename[FILENAME_MAX];
