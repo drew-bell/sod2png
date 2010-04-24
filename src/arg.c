@@ -7,7 +7,7 @@
 #include "types.h"
 #include <limits.h>
 //#define LENGTH _POSIX_PATH_MAX+1
-static const char PROGRAM_VERSION[] = "0.0.1";
+static const char PROGRAM_VERSION[] = "0.1.0";
 
 void null_options(argo opts) {
 	// Null out all the options
