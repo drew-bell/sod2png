@@ -7,10 +7,10 @@
 
 
 // Prototypes
-static void remove_part(xmlNode* a_node, char *node_type);
+static void rm_part(xmlNode* a_node, char *node_type);
 
 // Functions
-void remove_part(xmlNode* a_node, char *node_type) {
+void rm_part(xmlNode* a_node, char *node_type) {
     xmlNode *cur_node = NULL;
 	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
         if (cur_node->type == XML_ELEMENT_NODE) {
@@ -18,11 +18,11 @@ void remove_part(xmlNode* a_node, char *node_type) {
 				xmlUnlinkNode(cur_node);
 			}
 		}
-        remove_part(cur_node->children,node_type);
+        rm_part(cur_node->children,node_type);
     }
 }
 
-void print_element_names(xmlNode* a_node) {
+void print_EL_names(xmlNode* a_node) {
     xmlNode *cur_node = NULL;
 	
     for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
@@ -30,38 +30,38 @@ void print_element_names(xmlNode* a_node) {
             printf("node type: Element, name: %s\n", cur_node->name);
         }
 		
-        print_element_names(cur_node->children);
+        print_EL_names(cur_node->children);
     }
 }
 
-//void process_xml_options(xmlNode* node, argo *selected_opts) {
-void process_xml_options(xmlDocPtr doc, argo selected_opts) {
+//void process_xml_options(xmlNode* node, argo *opts) {
+void process_xml_options(xmlDocPtr doc, argo opts) {
 
 	// A pointer to the root element of the file
-	xmlNode *root_element = NULL;
+	xmlNode *root_EL = NULL;
 
 	// Get the root element
-	root_element = xmlDocGetRootElement(doc);
+	root_EL = xmlDocGetRootElement(doc);
 		
-	if (selected_opts->sequential_images) {
-		create_sequential_images(root_element, selected_opts);
+	if (opts->sequential_images) {
+		create_sequential_images(root_EL, opts);
 		
 		// later removing all 
-		selected_opts->no_arrows = true;
-		selected_opts->no_numbers = true;
-		selected_opts->no_Start_mark = true;
+		opts->no_arrows = true;
+		opts->no_numbers = true;
+		opts->no_Start_mark = true;
 	}
 	
-	if (selected_opts->no_arrows) {
-		remove_part(root_element,"polyline");
+	if (opts->no_arrows) {
+		rm_part(root_EL,"polyline");
 	}
 		
-	if (selected_opts->no_numbers) {
-		remove_part(root_element,"text");
+	if (opts->no_numbers) {
+		rm_part(root_EL,"text");
 	}
 	
-	if (selected_opts->no_Start_mark) {
-		remove_part(root_element,"circle");
+	if (opts->no_Start_mark) {
+		rm_part(root_EL,"circle");
 	}
 
 }
@@ -69,38 +69,39 @@ void process_xml_options(xmlDocPtr doc, argo selected_opts) {
 void setup_basic_doc(xmlDocPtr ND) {
 	
 	// Node pointers for the new doc
-	xmlNodePtr ND_root_node = NULL;
+	xmlNodePtr ND_Rnode = NULL;
 
 	// DTD pointer
 	xmlDtdPtr dtd = NULL;
 
 	// Create the root node
-	ND_root_node = xmlNewNode(NULL, BAD_CAST "svg");
+	ND_Rnode = xmlNewNode(NULL, BAD_CAST "svg");
 
 	// Set Attributes for the node
-	xmlNewProp(ND_root_node, BAD_CAST "version", BAD_CAST "1.1");
-	xmlNewProp(ND_root_node, BAD_CAST "id", BAD_CAST "Layer_1");
-	xmlNewProp(ND_root_node, BAD_CAST "xmlns", BAD_CAST "http://www.w3.org/2000/svg");
-	xmlNewProp(ND_root_node, BAD_CAST "xmlns:xlink", BAD_CAST "http://www.w3.org/1999/xlink");
-	xmlNewProp(ND_root_node, BAD_CAST "x", BAD_CAST "0px");
-	xmlNewProp(ND_root_node, BAD_CAST "y", BAD_CAST "0px");
-	xmlNewProp(ND_root_node, BAD_CAST "width", BAD_CAST "1000px");
-	xmlNewProp(ND_root_node, BAD_CAST "height", BAD_CAST "1000px");
-	xmlNewProp(ND_root_node, BAD_CAST "viewBox", BAD_CAST "0 0 1000 1000");
-	xmlNewProp(ND_root_node, BAD_CAST "enable-background", BAD_CAST "new 0 0 1000 1000");
-	xmlNewProp(ND_root_node, BAD_CAST "xml:space", BAD_CAST "preserve");
+	xmlNewProp(ND_Rnode, BAD_CAST "version", BAD_CAST "1.1");
+	xmlNewProp(ND_Rnode, BAD_CAST "id", BAD_CAST "Layer_1");
+	xmlNewProp(ND_Rnode, BAD_CAST "xmlns", BAD_CAST "http://www.w3.org/2000/svg");
+	xmlNewProp(ND_Rnode, BAD_CAST "xmlns:xlink", BAD_CAST "http://www.w3.org/1999/xlink");
+	xmlNewProp(ND_Rnode, BAD_CAST "x", BAD_CAST "0px");
+	xmlNewProp(ND_Rnode, BAD_CAST "y", BAD_CAST "0px");
+	xmlNewProp(ND_Rnode, BAD_CAST "width", BAD_CAST "1000px");
+	xmlNewProp(ND_Rnode, BAD_CAST "height", BAD_CAST "1000px");
+	xmlNewProp(ND_Rnode, BAD_CAST "viewBox", BAD_CAST "0 0 1000 1000");
+	xmlNewProp(ND_Rnode, BAD_CAST "enable-background", BAD_CAST "new 0 0 1000 1000");
+	xmlNewProp(ND_Rnode, BAD_CAST "xml:space", BAD_CAST "preserve");
 	
 	// Set the node to the documents root
-	xmlDocSetRootElement(ND, ND_root_node);
+	xmlDocSetRootElement(ND, ND_Rnode);
 	
 	// Add the <!DOCTYPE info>
 	dtd = xmlCreateIntSubset(ND, BAD_CAST "svg", BAD_CAST "-//W3C//DTD SVG 1.1//EN", BAD_CAST "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd");	
 }
 
 
-void create_sequential_images(xmlNode *OD_root_node, argo opts) {
+void create_sequential_images(xmlNode *OD_Rnode, argo opts) {
 
-	int number = 1;
+	// A counter for how many files in the sequence have been output
+	int n = 1;
 
 	// make the output file pretty
 	xmlIndentTreeOutput = 1;
@@ -109,7 +110,7 @@ void create_sequential_images(xmlNode *OD_root_node, argo opts) {
 	xmlDocPtr ND = NULL;
 
 	// Node pointers for the new doc
-	xmlNodePtr ND_root_node = NULL, node_copy = NULL;
+	xmlNodePtr ND_Rnode = NULL, node_copy = NULL;
 
 	// Create document and a node
 	ND = xmlNewDoc(BAD_CAST "1.0");
@@ -118,11 +119,11 @@ void create_sequential_images(xmlNode *OD_root_node, argo opts) {
 	setup_basic_doc(ND);
 
 	// Get the root node for the new document
-	ND_root_node = xmlDocGetRootElement(ND);
+	ND_Rnode = xmlDocGetRootElement(ND);
 	
 	// Start parsing the original file
 	xmlNode *cur_node = NULL;
-	cur_node = OD_root_node->children;
+	cur_node = OD_Rnode->children;
 	cur_node = cur_node->next;
 
 	char kanji[FILENAME_MAX];
@@ -133,41 +134,46 @@ void create_sequential_images(xmlNode *OD_root_node, argo opts) {
         if (cur_node->type == XML_ELEMENT_NODE) {
 
 			// Remove all the arrows, text and startmarks in the new doc to this point
-			remove_part(ND_root_node,"polyline");
-			remove_part(ND_root_node,"text");
-			remove_part(ND_root_node,"circle");
-			change_fill_colour(ND_root_node,"path");
+			rm_part(ND_Rnode,"polyline");
+			rm_part(ND_Rnode,"text");
+			rm_part(ND_Rnode,"circle");
+			change_fill_colour(ND_Rnode,"path");
 
 			// Copy the current node
 			node_copy = xmlCopyNode(cur_node, 1);
 			
 			// add the copy to the New Document
-			xmlAddChild(ND_root_node, node_copy);
+			xmlAddChild(ND_Rnode, node_copy);
 			
 			// Make an image
-			push_out_image(ND,opts,number,kanji);
+			push_out_image(ND,opts,n,kanji);
 
 			// increase the filename number
-			number++;
+			n++;
 		}
     }
 }
 
 void dump_tmp(xmlDocPtr ND) {
 	
-	FILE *temp_file;
+	// File handle for the temp output file
+	FILE *tf;
 	
 	// Create a tmp intermediary file
-	temp_file = fopen("/tmp/svg2png_tmpfile","w");
+	tf = fopen("/tmp/svg2png_tmpfile","w");
+	if (NULL == tf) {
+		perror("/tmp/svg2png_tmpfile");
+		exit(1);
+	}
 	
 	// output the altered file
-	xmlDocDump(temp_file,ND);
+	xmlDocDump(tf,ND);
 
 	// close the temp file
-	fclose(temp_file);
+	fclose(tf);
 }
 
-char* out_file_string(argo opts, int number) {
+char* out_file_string(argo opts, int n) {
 	
 	// If the is no output filename set, set the output to the same as the input
 		char kanji[FILENAME_MAX];
@@ -189,12 +195,12 @@ char* out_file_string(argo opts, int number) {
 
 	if (opts->sequential_images) {
 	// Create the output image name
-	sprintf(opts->out_file, "%s stroke %d_%s", kanji, number, opts->out_format);
+	sprintf(opts->out_file, "%s stroke %d_%s", kanji, n, opts->out_format);
 
 	}
 }
 
-void push_out_image(xmlDocPtr ND, argo opts, int number, char *kanji) {
+void push_out_image(xmlDocPtr ND, argo opts, int n, char *kanji) {
 
 	// Output file name
 	char *filename;
@@ -205,14 +211,21 @@ void push_out_image(xmlDocPtr ND, argo opts, int number, char *kanji) {
 	// Dump the tmp file
 	dump_tmp(ND);
 
-	filename = out_file_string (opts,number);
+	filename = out_file_string (opts,n);
 
 	// open file for writing
 	output_format = fopen(filename,"w");
+	if (output_format == NULL) {
+		perror(filename);
+		exit(1);
+	}
 	
 	// open the temp file for conversion to png
 	svg = fopen("/tmp/svg2png_tmpfile","r");
-	
+	if (svg == NULL) {
+		perror("/tmp/svg2png_tmpfile");
+		exit(1);
+	}	
 	// Pointer to function
 	svg_cairo_status_t (*render_functptr)(FILE*,FILE*,double,int,int) = NULL;
 	

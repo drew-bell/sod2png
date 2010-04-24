@@ -102,7 +102,7 @@ int main (int argc, char **argv) {
 	xmlFreeDoc(doc);
 
 	// release all the memory allocated for the options struct
-	cleanup_options(opts);
+	cleanup_o(opts);
 
 	return (0);
 } // main

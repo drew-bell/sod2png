@@ -17,4 +17,4 @@ typedef options *argo;
 
 void process_args(char **argv,int argc, argo opts);
 void null_options(argo opts);
-void cleanup_options(argo options);
+void cleanup_o(argo o);

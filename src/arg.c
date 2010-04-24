@@ -10,25 +10,25 @@
 //#define LENGTH _POSIX_PATH_MAX+1
 static const char PROGRAM_VERSION[] = "0.0.1";
 
-void cleanup_options (argo options) {
-	if (NULL != options->out_format) free (options->out_format);
-	if (NULL != options->svg_file) free (options->svg_file);
-	if (NULL != options->out_file) free (options->out_file);
-	if (NULL != options) free (options);
+void cleanup_o (argo o) {
+	if (NULL != o->out_format) free (o->out_format);
+	if (NULL != o->svg_file) free (o->svg_file);
+	if (NULL != o->out_file) free (o->out_file);
+	if (NULL != o) free (o);
 }
 
-void null_options (argo opts) {
+void null_options (argo o) {
 	// Null out all the options
-	opts->no_arrows = false;
-	opts->no_numbers = false;
-	opts->no_Start_mark = false;
-	opts->sequential_images = false;
-	opts->width = -1;
-	opts->height = -1;
-	opts->num_of_files = 0;
-	opts->out_format = NULL;
-	opts->svg_file = NULL;
-	opts->out_file = NULL;
+	o->no_arrows = false;
+	o->no_numbers = false;
+	o->no_Start_mark = false;
+	o->sequential_images = false;
+	o->width = -1;
+	o->height = -1;
+	o->num_of_files = 0;
+	o->out_format = NULL;
+	o->svg_file = NULL;
+	o->out_file = NULL;
 }
 
 void help (const char *argv0) {
@@ -143,7 +143,7 @@ void process_args (char **argv, int argc, argo opts) {
 		printf ("No .svg file to process. Quitting...\n");
 		
 		// dealloc any memory before quitting
-		cleanup_options (opts);
+		cleanup_o (opts);
 		exit (0);
 		}
 
@@ -175,7 +175,7 @@ void process_args (char **argv, int argc, argo opts) {
 				printf ("format not found.\n");
 				
 				// free any allocated memory and exit
-				cleanup_options (opts);
+				cleanup_o (opts);
 				exit (0);
 			}
 		
