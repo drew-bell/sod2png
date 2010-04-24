@@ -25,42 +25,33 @@ int main (int argc, char **argv) {
 
 	// Do a little testing on the xml libs to check they are OK
 	LIBXML_TEST_VERSION
-
+	
 	// Allocate the xmldoc handle
 	xmlDocPtr doc;
 
-	if (opts->svg_file == NULL) {
-
-		// Tell the user that the program quit due to lack of input file
-		fprintf(stderr,"No file to process.\n");
-
-		// Exit the program normally
-		exit(0);
-	} else {
-
-		// Read the file into memory
-		doc = xmlParseFile(opts->svg_file);
-	}
+	// Read the file into memory
+	doc = xmlParseFile(opts->svg_file);
 
 	// Pass the doc in memory for removal of unwanted parts
 	process_xml_options(doc, opts);
 
-	// If no output file has ben specified, dump the edited svg to stdout.
-	if (opts->out_file == NULL) {
-		
-		// Dump the file
-		xmlDocDump(stdout,doc);
+	// If no output file has been specified, dump the edited svg to stdout.
+	if (is_type(opts->out_format,"svg") || is_type(opts->out_format,".svg")) {
+		if (is_type(opts->out_file,"stdout")) {
+			
+			// Dump the file
+			xmlDocDump(stdout,doc);
 
-	} else if (is_type(opts->out_file,".svg")) {
+			} else {		
+			// File handle
+				FILE *output_format;
 		
-		// File handle
-		FILE *output_format;
-		
-		// open file for writing
-		output_format = fopen(opts->out_file,"w");
+			// open file for writing
+				output_format = fopen(opts->out_file,"w");
 
-		// Dump the file to document
-		xmlDocDump(output_format,doc);
+			// Dump the file to document
+				xmlDocDump(output_format,doc);
+		}
 
 	} else {
 
@@ -68,24 +59,24 @@ int main (int argc, char **argv) {
 		svg_cairo_status_t (*render_functptr)(FILE*,FILE*,double,int,int) = NULL;
 		
 		// point the render function to the correct one
-		render_functptr = get_render_function(opts->out_file);
+		render_functptr = get_render_function(opts->out_format);
 		
 		if (NULL != render_functptr) {
 			// Create file handles
-			FILE *output_format, *temp_file, *svg;
+			FILE *output_format, *svg;
 			
-			// Create a tmp intermediary file
-			temp_file = fopen("/tmp/svg2png_tmpfile","w");
-			
-			// output the altered file
-			xmlDocDump(temp_file,doc);
-			
-			// close the temp file
-			fclose(temp_file);
+			dump_tmp(doc);
 			
 			// open file for writing
-			output_format = fopen(opts->out_file,"w");
-			
+			if (is_type(opts->out_format,"stdout")) {
+
+				// Set output to stdout
+				output_format = stdout;		
+			} else {
+
+				// open a file.
+				output_format = fopen(opts->out_file,"w");
+			}
 			// open the temp file for conversion to png
 			svg = fopen("/tmp/svg2png_tmpfile","r");
 			
@@ -101,7 +92,7 @@ int main (int argc, char **argv) {
 		} else {
 
 			// Output error for the user
-			fprintf(stderr,"Unknown output file type : %s\n", ext(opts->out_file));
+			fprintf(stderr,"Unable to set render function pointer.");
 		}
 	}
 
@@ -109,9 +100,9 @@ int main (int argc, char **argv) {
 	xmlCleanupParser();
 	xmlMemoryDump();
 	xmlFreeDoc(doc);
-	free(opts->svg_file);
-	free(opts->out_file);
-	free(opts);
+
+	// release all the memory allocated for the options struct
+	cleanup_options(opts);
 
 	return (0);
 } // main

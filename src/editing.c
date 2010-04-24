@@ -51,6 +51,7 @@ void process_xml_options(xmlDocPtr doc, argo selected_opts) {
 		selected_opts->no_numbers = true;
 		selected_opts->no_Start_mark = true;
 	}
+	
 	if (selected_opts->no_arrows) {
 		remove_part(root_element,"polyline");
 	}
@@ -125,9 +126,8 @@ void create_sequential_images(xmlNode *OD_root_node, argo opts) {
 	cur_node = cur_node->next;
 
 	char kanji[FILENAME_MAX];
-	strncpy(kanji,opts->svg_file,strlen(opts->svg_file)-4);
 	
-	printf("%s",kanji);
+	strncpy(kanji,opts->svg_file,strlen(opts->svg_file)-4);
 	
 	for (cur_node = cur_node->next; cur_node; cur_node = cur_node->next) {
         if (cur_node->type == XML_ELEMENT_NODE) {
@@ -153,13 +153,9 @@ void create_sequential_images(xmlNode *OD_root_node, argo opts) {
     }
 }
 
-void push_out_image(xmlDocPtr ND, argo opts, int number, char *kanji) {
-
-	// Output file name
-	char filename[FILENAME_MAX];
-
-	//File name handles
-	FILE *output_format, *temp_file, *svg;
+void dump_tmp(xmlDocPtr ND) {
+	
+	FILE *temp_file;
 	
 	// Create a tmp intermediary file
 	temp_file = fopen("/tmp/svg2png_tmpfile","w");
@@ -169,10 +165,47 @@ void push_out_image(xmlDocPtr ND, argo opts, int number, char *kanji) {
 
 	// close the temp file
 	fclose(temp_file);
+}
 
-	//printf("%s",kanji);
+char* out_file_string(argo opts, int number) {
+	
+	// If the is no output filename set, set the output to the same as the input
+		char kanji[FILENAME_MAX];
+		
+		// copy the input file name minus the last 4 chars (extention) 
+		// **** This will fail if the input file has a 4 char extention!!!***
+		strncpy (kanji, opts->svg_file, strlen (opts->svg_file)-4);
+			
+	if (NULL == opts->out_file) {
+
+		// malloc the memory for the var and assign it
+		opts->out_file = (char*)malloc (FILENAME_MAX);
+		
+		// Append the outputformat extention
+		strncat (kanji, "_out", 4);
+		strncat (kanji, opts->out_format, 4);
+		strncpy (opts->out_file, kanji, FILENAME_MAX);
+	}
+
+	if (opts->sequential_images) {
 	// Create the output image name
-	sprintf(filename, "%s stroke %d_.png", kanji, number);
+	sprintf(opts->out_file, "%s stroke %d_%s", kanji, number, opts->out_format);
+
+	}
+}
+
+void push_out_image(xmlDocPtr ND, argo opts, int number, char *kanji) {
+
+	// Output file name
+	char *filename;
+
+	//File name handles
+	FILE *output_format, *svg;
+	
+	// Dump the tmp file
+	dump_tmp(ND);
+
+	filename = out_file_string (opts,number);
 
 	// open file for writing
 	output_format = fopen(filename,"w");
