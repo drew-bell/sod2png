@@ -18,7 +18,7 @@ int main (int argc, char **argv) {
 	null_options(opts);
 	
 	// create an element to hold the root node
-	xmlNode *root_element = NULL;
+	xmlDocPtr ND = NULL;
 
 	// process all the cli options and return them in the structure
 	process_args(argv,argc,opts);
@@ -32,67 +32,50 @@ int main (int argc, char **argv) {
 	// Read the file into memory
 	doc = xmlParseFile(opts->svg_file);
 
-	// Pass the doc in memory for removal of unwanted parts
-	process_xml_options(doc, opts);
+	// Pass the root of the doc in memory for removal of unwanted parts and return a node ptr
+	ND = process_xml_options(doc, opts);
 
 	// If no output file has been specified, dump the edited svg to stdout.
-	if (is_type(opts->out_format,"svg") || is_type(opts->out_format,".svg")) {
+	if (is_type(opts->out_format,".svg")) {
+
+		FILE *outf;
+
 		if (is_type(opts->out_file,"stdout")) {
 			
-			// Dump the file
-			xmlDocDump(stdout,doc);
-
-			} else {		
-			// File handle
-				FILE *output_format;
-		
-			// open file for writing
-				output_format = fopen(opts->out_file,"w");
-
-			// Dump the file to document
-				xmlDocDump(output_format,doc);
-		}
-
-	} else {
-
-		// Pointer to function
-		svg_cairo_status_t (*render_functptr)(FILE*,FILE*,double,int,int) = NULL;
-		
-		// point the render function to the correct one
-		render_functptr = get_render_function(opts->out_format);
-		
-		if (NULL != render_functptr) {
-			// Create file handles
-			FILE *output_format, *svg;
+			// set the output to stdout
+			outf = stdout;
 			
-			dump_tmp(doc);
-			
-			// open file for writing
-			if (is_type(opts->out_format,"stdout")) {
-
-				// Set output to stdout
-				output_format = stdout;		
 			} else {
 
-				// open a file.
-				output_format = fopen(opts->out_file,"w");
+			// open file for writing
+				outf = fopen(opts->out_file,"w");
 			}
-			// open the temp file for conversion to png
-			svg = fopen("/tmp/svg2png_tmpfile","r");
+			// Dump the file to document
+				xmlDocDump(outf,doc);	
+
+	} else {
+		
+		if (opts->sequential_images) {
+
+			// Create the image sequence
+			create_sequential_images(ND , opts);
+
+			// set the options to remove everything for the final images
+			opts->no_arrows = true;
+			opts->no_numbers = true;
+			opts->no_Start_mark = true;
 			
-			// render the output file
-			render_functptr(svg, output_format, 1.0, opts->width, opts->height);
-			
-			// close all files
-			fclose(svg);
-			fclose(output_format);
-			
-			// delete the temp file
-			unlink("/tmp/svg2png_tmpfile");
+			// reprocess the file
+			ND = process_xml_options(doc, opts);
+
+			// Create a single image.
+			push_out_image(ND, opts, 0, NULL);
+
 		} else {
 
-			// Output error for the user
-			fprintf(stderr,"Unable to set render function pointer.");
+			// Create a single image.
+			push_out_image(ND, opts, 0, NULL);
+			
 		}
 	}
 

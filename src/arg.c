@@ -6,8 +6,13 @@
 #include "arg.h"
 #include "types.h"
 #include <limits.h>
+#include "editing.h"
 
 static const char PROGRAM_VERSION[] = "0.0.1";
+
+char* rewrite_format_string(char* string) {
+	return &string[1];
+}
 
 void cleanup_o (argo o) {
 	if (NULL != o->out_format) free (o->out_format);
@@ -41,6 +46,9 @@ void help (const char *argv0) {
 	fprintf (stderr, "  -h, --height=HEIGHT\tHeight of output image in pixels.\n");
 	fprintf (stderr, "  -m, --sequence\tSequential image.\n");
 	fprintf (stderr, "  -o, --format=FORMAT\tThe desired output file format , svg or png [png is default].\n");
+	fprintf (stderr, "\t Available formats.\n");
+	fprintf (stderr, "\t png : Portable Network Graphics [default]\n");
+	fprintf (stderr, "\t svg : Scalable Vector Graphics\n");
 	puts ("");
 	fprintf (stderr, "  -a, --no-arrows\tRemove arrows from the output image.\n");
 	fprintf (stderr, "  -n, --no-numbers\tRemove numbers from the output.\n");
@@ -49,6 +57,7 @@ void help (const char *argv0) {
 	fprintf (stderr, "  -?, --help\t\tGive this help.\n");
 	fprintf (stderr, "  -V, --version\t\tProgram Version.\n");
 	free (argv0_copy);
+	exit(0);
 }
 
 void process_args (char **argv, int argc, argo opts) {
@@ -95,18 +104,26 @@ void process_args (char **argv, int argc, argo opts) {
 			case 'o':
 				// Set the output format.
 
-				/***************************************************/
-				/*** NEED TO ADD FORMAT VALIDATION CHECK HERE    ***/
-				/***************************************************/
+				// if the agrument provided is not 3 chars in length, exit.
+				if (strlen(optarg) != 3) {
+					fprintf(stderr,"Argument for option -o incorrect: too long or too short.\n");
+					help(argv[0]);
+				}
+
+				// Add a '.' to the format string to make processing easier
+				char f[5];
+				sprintf(f, ".%s",optarg);
+				f[4]='\0';
 
 				// Allocate memory for the format string
-				opts->out_format = (char*)malloc (strlen (optarg)+2);
+				opts->out_format = (char*)malloc (5);
 
 				// copy the format string to the allocated memory
-				strncpy (opts->out_format, optarg, strlen (optarg));
+				strncpy (opts->out_format, f, 5);
 
 				// ensure the last char is a '\0' for later string processing
-				opts->out_format[strlen (optarg)] = '\0';
+				opts->out_format[4] = '\0';
+
 				break;
 			case 's':
 				// Set the remove start mark option
@@ -124,7 +141,6 @@ void process_args (char **argv, int argc, argo opts) {
 			case '?':
 				// Output the help information
 				help (argv[0]);
-				exit (1);
 				break;
 			default:
 				break;
@@ -154,7 +170,6 @@ void process_args (char **argv, int argc, argo opts) {
 
 				// Print out the options info and quit
 				help (argv[0]);
-				exit (1);
 			}
 		}
 	}
@@ -170,44 +185,61 @@ void process_args (char **argv, int argc, argo opts) {
 		exit (0);
 		}
 
-	// check to see if no output format has been set.
-	if (NULL == opts->out_format) {
-		
-		// check to see if no output filename has been net
-		if (NULL == opts->out_file) {
+		// Check for output format
+		if (NULL == opts->out_format) {
 
-			printf ("Setting default output format.\n");
+			// check for a filename to set the format from
+			if (NULL == opts->out_file) {
+
+				printf ("Setting default output format : PNG.\n");
+
+				// malloc the number of byes in the extention +1 for the format var
+				opts->out_format = (char*)malloc (5);
 			
-			// malloc some memory for the var
-			opts->out_format = (char*)malloc (5);
-			
-			// set png as the output format
-			strncpy (opts->out_format, ".png", 5);
-	
-		} else if (available_formats (strrchr (opts->out_file, '.'))) {
-			
-			// malloc the number of byes in the extention +1 for the format var
-			opts->out_format = (char*)malloc (strlen (strrchr (opts->out_file, '.'))+1);
-			
-			// assign the ext to the format var
-			strncpy (opts->out_format, ext (opts->out_file), strlen (strrchr (opts->out_file, '.'))+1);
-			
+				// assign the default file type (png)
+				strncpy (opts->out_format, ".png", 5);
+
+				// get the file name
+				opts->out_file = out_file_string(opts,0);
+
+				printf ("Setting default file name : %s.\n",opts->out_file); 
+
 			} else {
-				
+				if (!available_formats(ext(opts->out_file))) {
+					// Write out error
+					printf ("Format not found.\n");
+
+					// output the usage help
+					help(argv[0]);
+
+					// free any allocated memory and exit
+					cleanup_o (opts);
+					exit (0);
+					
+				}
+
+				// malloc the number of byes in the extention +1 for the format var
+				opts->out_format = (char*)malloc (strlen (strrchr (opts->out_file, '.'))+1);
+
+				// assign the ext to the format var
+				strncpy (opts->out_format, ext (opts->out_file), strlen (strrchr (opts->out_file, '.'))+1);	
+
+			}
+		} else if (!available_formats(opts->out_format)) {
+
 				// Write out error
-				printf ("format not found.\n");
-				
+				printf ("Format not found.\n");
+
+				// output the usage help
+				help(argv[0]);
+
 				// free any allocated memory and exit
 				cleanup_o (opts);
 				exit (0);
 			}
 		
-	} else if (available_formats (opts->out_format)) {
-		// convert the string the out_format var to include the '.' for the extention
-		if (strcmp ("png",opts->out_format) == 0) strncpy (opts->out_format, ".png", 5);
-		if (strcmp ("svg",opts->out_format) == 0) strncpy (opts->out_format, ".svg", 5);		
-		} else {
-			exit(0);
-		}
 	
+	if (NULL == opts->out_file) {
+		out_file_string(opts,0);
+	}
 }

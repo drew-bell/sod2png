@@ -4,10 +4,11 @@
 /*  xml editing header file */
 
 void print_EL_names(xmlNode* a_node);
-void process_xml_options(xmlDocPtr doc, argo selected_opts);
-void change_fill_colour(xmlNode *a_node, char *node_type);
+xmlDocPtr process_xml_options(xmlDocPtr doc, argo selected_opts);
+void change_fill_colour(xmlNode *a_node, char *node_type, char *colour);
 void setup_basic_doc(xmlDocPtr NewDoc);
-void create_sequential_images(xmlNode *OD_Rnode, argo opts);
+void create_sequential_images(xmlDocPtr OD, argo opts);
 void setup_basic_doc(xmlDocPtr NewDoc);
 void push_out_image(xmlDocPtr ND, argo opts, int number, char *kanji);
 void dump_tmp(xmlDocPtr ND);
+char* out_file_string(argo opts, int n);

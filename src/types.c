@@ -21,6 +21,10 @@ int is_type(char *file,char *type) {
 	
 	// set the extention of the file to the ext variable
 	exts = ext(file);
+	if (NULL == exts) {
+		printf("No extention found\n");
+		help();
+	}
 
 	if (NULL != exts) {
 		// Compare the extention with the type in a non-case sensitive way
@@ -42,22 +46,21 @@ int is_type(char *file,char *type) {
 	return false;
 } // is type
 
-svg_cairo_status_t (*get_render_function(char *file))(FILE*,FILE*,double,int,int) {
-	
+svg_cairo_status_t (*get_render_function(char *format))(FILE*,FILE*,double,int,int) {
+
 	// Check if it is a PNG to be output
-	if (is_type(file,".png") || is_type(file,"png")) {
+	if (0 == strcasecmp(format,".png")) {
 		
 		// Set the output function to render_to_png
 		return &render_to_png;
-	} else { //if (is_type(file,".jpg")) {
-
-			// Set the output function to render_to_png
-		//	return &render_to_jpg;
-		//} else {
-		
-		// return a null pointer if the file type is unknown
-		return NULL;
 	}
+
+/**************************************************/
+/***   ADD NEW OUTPUT FORMATS HERE              ***/
+/**************************************************/
+	
+	// return a null ptr if unsupported file format
+	return NULL;
 } // 
 
 // check to see if the file exists
@@ -69,14 +72,35 @@ int file_exists(char *file) {
 }
 
 int available_formats(char* format) {
+
+	// Check for a NULL before continuing
+	if (NULL == format) return false;
+
+	// Array of strings to check agains
 	char *formats[4];
+
+	// counter for stepping through the array
 	int i = 0;
+
+	// create the available formats string array
 	formats[0] = (char*)".png";
 	formats[1] = (char*)".svg";
 	formats[2] = NULL;
+
+	// search for the desired format
 	do {
-		if (0 == strcmp(format,formats[i])) { return true; }
+		
+		// compare the array string and the desired format string
+		if (0 == strcmp(format,formats[i])) {
+
+			// return true if found
+			return true; 
+		}
+
+		// increase the step counter
 		i++;
 	} while (NULL != formats[i]);
+
+	// if not found 
 	return false;
 }
