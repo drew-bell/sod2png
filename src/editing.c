@@ -5,23 +5,41 @@
 #include <string.h>
 #include <unistd.h>
 
-
-// Prototypes
+#pragma mark Prototypes
 static void rm_part(xmlNode* a_node, char *node_type);
 
-// Functions
+#pragma mark Functions
+
+/**************************************************************/
+/*** Delete a node from the document based on the node type ***/
+/**************************************************************/
 void rm_part(xmlNode* a_node, char *node_type) {
+
+	// Create a xmlNode for use
     xmlNode *cur_node = NULL;
+
+	// Step through teh xml nodes
 	for (cur_node = a_node; cur_node; cur_node = cur_node->next) {
+
+		// Check the current node is an element and not a space
         if (cur_node->type == XML_ELEMENT_NODE) {
+	
+			// Look at the type of node found and check if it is what we are looking for
 			if (!strcmp((char*)cur_node->name,node_type)) {
+
+				// remove the node from the document structure
 				xmlUnlinkNode(cur_node);
 			}
 		}
+
+		// Search recurrsively
         rm_part(cur_node->children,node_type);
     }
 }
 
+/**************************************************************/
+/* CURRENTLY UNUSED */
+/**************************************************************/
 void print_EL_names(xmlNode* a_node) {
     xmlNode *cur_node = NULL;
 	
@@ -34,7 +52,9 @@ void print_EL_names(xmlNode* a_node) {
     }
 }
 
-//void process_xml_options(xmlNode* node, argo *opts) {
+/**************************************************************/
+/*** Process the options entered at the command line        ***/
+/**************************************************************/
 void process_xml_options(xmlDocPtr doc, argo opts) {
 
 	// A pointer to the root element of the file
@@ -42,8 +62,11 @@ void process_xml_options(xmlDocPtr doc, argo opts) {
 
 	// Get the root element
 	root_EL = xmlDocGetRootElement(doc);
-		
+	
+	// Check for sequential images output
 	if (opts->sequential_images) {
+
+		// create sequential images from the svg document
 		create_sequential_images(root_EL, opts);
 		
 		// later removing all 
@@ -64,6 +87,7 @@ void process_xml_options(xmlDocPtr doc, argo opts) {
 		rm_part(root_EL,"circle");
 	}
 
+	
 }
 
 void setup_basic_doc(xmlDocPtr ND) {

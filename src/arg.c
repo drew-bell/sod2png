@@ -7,7 +7,6 @@
 #include "types.h"
 #include <limits.h>
 
-//#define LENGTH _POSIX_PATH_MAX+1
 static const char PROGRAM_VERSION[] = "0.0.1";
 
 void cleanup_o (argo o) {
@@ -58,20 +57,22 @@ void process_args (char **argv, int argc, argo opts) {
 	
 	// the long options for the program
 	static struct option long_options[] = {
-		/* These options don't set a flag.
-		 We distinguish them by their indices.  */
+
+		/* These options set a bool flag. */
 		{"version", no_argument, NULL, 'V'}, 
 		{"no-arrows", no_argument, NULL, 'a'}, 
 		{"no-numbers", no_argument, NULL, 'n'}, 
-		{"no-startmark", no_argument, NULL, 's'}, 
-		{"width", required_argument, NULL, 'w'}, 
-		{"format", required_argument, NULL, 'i'}, 
-		{"height", required_argument, NULL, 'h'}, 
+		{"no-startmark", no_argument, NULL, 's'},  
 		{"sequence", no_argument, NULL, 'm'}, 
 		{"help", no_argument, NULL, '?'}, 
+
+		/* THese options have an argument requirement */
+		{"width", required_argument, NULL, 'w'}, 
+		{"format", required_argument, NULL, 'i'}, 
+		{"height", required_argument, NULL, 'h'},
 		{NULL, 0, NULL, 0}
 	};
-	char *tmp;
+
 	// parse the options and set the values in the options structure
 	while ( (c = getopt_long (argc, argv, "V?no:amsw:h:", long_options, NULL)) != -1)
 		switch (c) {
@@ -93,9 +94,19 @@ void process_args (char **argv, int argc, argo opts) {
 				break;
 			case 'o':
 				// Set the output format.
+
+				/***************************************************/
+				/*** NEED TO ADD FORMAT VALIDATION CHECK HERE    ***/
+				/***************************************************/
+
+				// Allocate memory for the format string
 				opts->out_format = (char*)malloc (strlen (optarg)+2);
+
+				// copy the format string to the allocated memory
 				strncpy (opts->out_format, optarg, strlen (optarg));
-				opts->out_format[strlen (optarg)]='\0';
+
+				// ensure the last char is a '\0' for later string processing
+				opts->out_format[strlen (optarg)] = '\0';
 				break;
 			case 's':
 				// Set the remove start mark option
@@ -121,12 +132,24 @@ void process_args (char **argv, int argc, argo opts) {
 	
 	// Add the input file to the args structure
 	if (argc - optind >= 1) {
+
+		// Allocate memory for the file name
 		opts->svg_file = (char*)malloc (FILENAME_MAX);
+		
+		// Copy the file name argument to the allocated memory
 		strncpy (opts->svg_file, argv[optind++], FILENAME_MAX);
+		
+		// check for another filename argument
 		if (argc - optind >= 1) {
+
 			// Add the output file to the args structure
+			// Allocate memory for the file name
 			opts->out_file = (char*)malloc (FILENAME_MAX);
+
+			// Copy the file name argument to the allocated memory
 			strncpy (opts->out_file, argv[optind++], FILENAME_MAX);
+
+			// check for another filename
 			if (argc - optind > 0) {
 
 				// Print out the options info and quit

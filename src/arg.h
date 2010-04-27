@@ -7,7 +7,7 @@ typedef struct {
 	bool sequential_images;
 	int width;
 	int height;
-	int num_of_files;
+	int num_of_files;  // As yet unused information
 	char *out_format;
 	char *svg_file;
 	char *out_file;
