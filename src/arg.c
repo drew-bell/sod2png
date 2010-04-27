@@ -237,8 +237,7 @@ void process_args (char **argv, int argc, argo opts) {
 				cleanup_o (opts);
 				exit (0);
 			}
-		
-	
+
 	if (NULL == opts->out_file) {
 		out_file_string(opts,0);
 	}

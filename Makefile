@@ -1,7 +1,7 @@
 PROGRAM_NAME = sod2png
 CC = gcc
 CCFLAGS = -Wall -g
-CFLAGS = -I/usr/local/include/libxml2 -I/usr/local/include/cairo
+CFLAGS = -I/usr/include/libxml2 -I/usr/local/include/cairo
 LDFLAGS = -lxml2 -lcairo -lsvg-cairo
 srcdir = .
 all: sod2png

@@ -21,12 +21,15 @@ int is_type(char *file,char *type) {
 	
 	// set the extention of the file to the ext variable
 	exts = ext(file);
+
+	// Check for NULL
 	if (NULL == exts) {
 		printf("No extention found\n");
 		help();
 	}
 
 	if (NULL != exts) {
+
 		// Compare the extention with the type in a non-case sensitive way
 		if ((strcasecmp(exts,type) == 0)) {
 
@@ -36,11 +39,6 @@ int is_type(char *file,char *type) {
 	
 		// if not of specified type, return false
 		return false;
-	}
-	
-	if ((strcasecmp(file,type) == 0)) {
-
-		return true;
 	}
 
 	return false;
@@ -91,7 +89,7 @@ int available_formats(char* format) {
 	do {
 		
 		// compare the array string and the desired format string
-		if (0 == strcmp(format,formats[i])) {
+		if (0 == strcasecmp(format,formats[i])) {
 
 			// return true if found
 			return true; 
