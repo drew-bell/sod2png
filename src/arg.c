@@ -8,7 +8,7 @@
 #include <limits.h>
 #include "editing.h"
 
-static const char PROGRAM_VERSION[] = "0.0.1";
+static const char PROGRAM_VERSION[] = "0.1.0";
 
 char* rewrite_format_string(char* string) {
 	return &string[1];
